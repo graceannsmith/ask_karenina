@@ -1,14 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-   
-  
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="js/scripts.js"></script>
+  <link href="styles/styles.css" rel="stylesheet" type="text/css">
+  <title>Document</title>
 </head>
-<body>
-    
+
+<body class="everything">
+  <h1>Ask Karenina</h1>
+  <div>
+    <form>
+
+      <label for="question">What would you like to ask?</label><br>
+      <input type="text" id="question" name="question" /><br>
+      <input type="submit"><br>
+
+      <div id="quote-display"></div>
+      <button id="incrementButton">Next Quote</button>
+      <button id="decrementButton">Previous Quote</button>
+    </form>
+  </div>
+  <div>
+    <p id='answer'></p>
+  </div>
 </body>
+
 </html>
