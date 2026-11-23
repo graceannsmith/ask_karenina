@@ -7,25 +7,377 @@
   <script src="js/scripts.js"></script>
   <link href="styles/styles.css" rel="stylesheet" type="text/css">
   <title>Document</title>
+  
 </head>
 
 <body class="everything">
-  <h1>Ask Karenina</h1>
-  <div>
-    <form>
+  <div class="page-wrapper">
+  <!-- <svg width="600" height="300" viewBox="0 0 600 300">
+    <path id="arcPath" d="M50,200 L150,200 Q300,50 450,200 L550,200" fill="transparent" stroke="black"/>
+    <text font-size="48" font-weight="bold" fill="black">
+        <textPath href="#arcPath" startOffset="50%" text-anchor="middle">
+            Ask KareninA
+        </textPath>
+    </text>
+</svg> -->
+<!-- <svg width="600" height="600" viewBox="0 0 600 300">
+  <path id="arcPath" d="M50,200 Q300,-300 550,200" fill="transparent" stroke="none"/>
+  <text font-size="60" font-weight="bold" fill="black">
+  <textPath xlink:href="#arcPath" startOffset="50%" text-anchor="middle">
+Ask KArenina
+</textPath>
+</text>
+</svg>
+ -->
+<!-- Decorative upper-left corner -->
+<svg
+  class="corner-ornament top-left"
+  viewBox="0 0 100 100"
+  aria-hidden="true"
+>
+  <g fill="none" stroke-linecap="round">
 
-      <label for="question">What would you like to ask?</label><br>
-      <input type="text" id="question" name="question" /><br>
-      <input type="submit"><br>
+    <!-- Architectural corner -->
+    <path
+      d="M10,85 V10 H85"
+      stroke="#59483f"
+      stroke-width="1.5"
+    />
 
-      <div id="quote-display"></div>
-      <button id="incrementButton">Next Quote</button>
-      <button id="decrementButton">Previous Quote</button>
-    </form>
+    <path
+      d="M17,70 V17 H70"
+      stroke="#a88459"
+      stroke-width="1"
+    />
+
+    <!-- Circular ornament -->
+    <circle
+      cx="17"
+      cy="17"
+      r="7"
+      stroke="#59483f"
+      stroke-width="1.5"
+    />
+
+    <circle
+      cx="17"
+      cy="17"
+      r="11"
+      stroke="#a88459"
+      stroke-width="1"
+      opacity="0.7"
+    />
+
+    <circle
+      cx="17"
+      cy="17"
+      r="15"
+      stroke="#d1ad78"
+      stroke-width="0.8"
+      opacity="0.5"
+    />
+
+  </g>
+</svg>
+
+<!-- Decorative upper-right corner -->
+<svg
+  class="corner-ornament top-right"
+  viewBox="0 0 100 100"
+  aria-hidden="true"
+>
+  <g fill="none" stroke-linecap="round">
+
+    <!-- Architectural corner -->
+    <path
+      d="M10,85 V10 H85"
+      stroke="#59483f"
+      stroke-width="1.5"
+    />
+
+    <path
+      d="M17,70 V17 H70"
+      stroke="#a88459"
+      stroke-width="1"
+    />
+
+    <!-- Circular ornament -->
+    <circle
+      cx="17"
+      cy="17"
+      r="7"
+      stroke="#59483f"
+      stroke-width="1.5"
+    />
+
+    <circle
+      cx="17"
+      cy="17"
+      r="11"
+      stroke="#a88459"
+      stroke-width="1"
+      opacity="0.7"
+    />
+
+    <circle
+      cx="17"
+      cy="17"
+      r="15"
+      stroke="#d1ad78"
+      stroke-width="0.8"
+      opacity="0.5"
+    />
+
+  </g>
+</svg>
+
+<!-- Decorative lower-right corner -->
+<svg
+  class="corner-ornament bottom-right"
+  viewBox="0 0 100 100"
+  aria-hidden="true"
+>
+  <g fill="none" stroke-linecap="round">
+
+    <!-- Architectural corner -->
+    <path
+      d="M10,85 V10 H85"
+      stroke="#59483f"
+      stroke-width="1.5"
+    />
+
+    <path
+      d="M17,70 V17 H70"
+      stroke="#a88459"
+      stroke-width="1"
+    />
+
+    <!-- Circular ornament -->
+    <circle
+      cx="17"
+      cy="17"
+      r="7"
+      stroke="#59483f"
+      stroke-width="1.5"
+    />
+
+    <circle
+      cx="17"
+      cy="17"
+      r="11"
+      stroke="#a88459"
+      stroke-width="1"
+      opacity="0.7"
+    />
+
+    <circle
+      cx="17"
+      cy="17"
+      r="15"
+      stroke="#d1ad78"
+      stroke-width="0.8"
+      opacity="0.5"
+    />
+
+  </g>
+</svg>
+
+<!-- Decorative lower-left corner -->
+<svg
+  class="corner-ornament bottom-left"
+  viewBox="0 0 100 100"
+  aria-hidden="true"
+>
+  <g fill="none" stroke-linecap="round">
+
+    <!-- Architectural corner -->
+    <path
+      d="M10,85 V10 H85"
+      stroke="#59483f"
+      stroke-width="1.5"
+    />
+
+    <path
+      d="M17,70 V17 H70"
+      stroke="#a88459"
+      stroke-width="1"
+    />
+
+    <!-- Circular ornament -->
+    <circle
+      cx="17"
+      cy="17"
+      r="7"
+      stroke="#59483f"
+      stroke-width="1.5"
+    />
+
+    <circle
+      cx="17"
+      cy="17"
+      r="11"
+      stroke="#a88459"
+      stroke-width="1"
+      opacity="0.7"
+    />
+
+    <circle
+      cx="17"
+      cy="17"
+      r="15"
+      stroke="#d1ad78"
+      stroke-width="0.8"
+      opacity="0.5"
+    />
+
+  </g>
+</svg>
+
+ <svg
+  class="title-svg"
+  viewBox="-50 0 700 300"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <path
+      id="titleArc"
+      d="M-50,200 Q300,40 650,200"
+    />
+  </defs>
+
+  <text
+    font-size="100"
+    font-family="Federo"
+    fill="#59483f"
+  >
+    <textPath
+      href="#titleArc"
+      startOffset="50%"
+      text-anchor="middle"
+    >
+      ASK KARENINA
+    </textPath>
+  </text>
+  <g id="architectural-framework" fill="none">
+
+  <!-- LEFT: light moves toward center -->
+  <path d="M160,225 V285"
+        stroke="#59483f" stroke-width="1.5" opacity="0.8" />
+
+  <path d="M164,238 V285"
+        stroke="#a88459" stroke-width="1.2" opacity="0.75" />
+
+  <path d="M168,251 V285"
+        stroke="#d1ad78" stroke-width="1.1" opacity="0.7" />
+
+
+  <!-- CENTER: taller, with light on both sides -->
+  <path d="M300,155 V285"
+        stroke="#59483f" stroke-width="1.5" opacity="0.8" />
+
+  <path d="M296,174 V285"
+        stroke="#a88459" stroke-width="1.2" opacity="0.75" />
+
+  <path d="M304,174 V285"
+        stroke="#d1ad78" stroke-width="1.1" opacity="0.7" />
+
+
+  <!-- RIGHT: mirrored toward center -->
+  <path d="M440,225 V285"
+        stroke="#59483f" stroke-width="1.5" opacity="0.8" />
+
+  <path d="M436,238 V285"
+        stroke="#a88459" stroke-width="1.2" opacity="0.75" />
+
+  <path d="M432,251 V285"
+        stroke="#d1ad78" stroke-width="1.1" opacity="0.7" />
+<!-- HORIZON / ARCHITECTURAL FOUNDATION -->
+
+<g id="horizon-lines" fill="none">
+
+  <!-- Main horizon -->
+  <path
+    d="M115,288 H485"
+    stroke="#59483f"
+    stroke-width="1.2"
+    opacity="0.55"
+  />
+
+  <!-- Warm golden echo -->
+  <path
+    d="M145,292 H455"
+    stroke="#a88459"
+    stroke-width="1"
+    opacity="0.65"
+  />
+
+  <!-- Faint inner reflection -->
+  <path
+    d="M195,296 H405"
+    stroke="#d1ad78"
+    stroke-width="0.8"
+    opacity="0.65"
+  />
+
+</g>
+<!-- CIRCULAR LIGHT ACCENTS -->
+
+<g fill="none">
+
+  <!-- LEFT OF CENTRAL LINE -->
+  <circle cx="282" cy="279" r="7"
+          stroke="#59483f" stroke-width="1.3" opacity="0.65"/>
+  <circle cx="282" cy="265" r="4.5"
+          stroke="#a88459" stroke-width="1" opacity="0.65"/>
+  <circle cx="282" cy="254" r="2.5"
+          stroke="#d1ad78" stroke-width="0.8" opacity="0.65"/>
+
+  <!-- RIGHT OF CENTRAL LINE -->
+  <circle cx="318" cy="279" r="7"
+          stroke="#59483f" stroke-width="1.3" opacity="0.65"/>
+  <circle cx="318" cy="265" r="4.5"
+          stroke="#a88459" stroke-width="1" opacity="0.65"/>
+  <circle cx="318" cy="254" r="2.5"
+          stroke="#d1ad78" stroke-width="0.8" opacity="0.65"/>
+
+</g>
+</g>
+</svg>
+
+
+  <div class="quote-section">
+  <input
+    class="button ask-anna-button"
+    type="submit"
+    value="ASK ANNA"
+  />
+
+  <div class="passage-layout">
+    <button
+      type="button"
+      class="button passage-button"
+      id="decrementButton"
+    >
+      Earlier Passage
+    </button>
+
+    <div id="quote-display"></div>
+
+    <button
+      type="button"
+      class="button passage-button"
+      id="incrementButton"
+    >
+      Later Passage
+    </button>
   </div>
-  <div>
-    <p id='answer'></p>
-  </div>
+</div>
+
+<div>
+  <p id="answer"></p>
+</div>
+</div>
 </body>
 
 </html>
+

@@ -1,6 +1,296 @@
+
+@import './font.css';
+
+/* ========================================
+   GLOBAL STYLES
+======================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 35px;
+
+  border: 12px solid #59483f;
+  outline: 2px solid #a88459;
+  outline-offset: -20px;
+}
+
 .everything {
-    background-color: rgb(136, 4, 4);
-    font-family: PT Sans;
-    text-align: center;
-    font-size: 120%
+  background-color: rgb(222, 193, 177);
+  text-align: center;
+}
+
+/* ========================================
+   PAGE WRAPPER
+======================================== */
+
+.page-wrapper {
+  position: relative;
+  min-height: calc(100vh - 44px);
+  padding: 48px 35px 70px;
+}
+
+/* ========================================
+   ART DECO CORNER ORNAMENTS
+======================================== */
+
+.corner-ornament {
+  position: absolute;
+  width: clamp(100px, 12vw, 190px);
+  height: clamp(100px, 12vw, 190px);
+  pointer-events: none;
+}
+
+.top-left {
+  top: 30px;
+  left: 30px;
+}
+
+.top-right {
+  top: 30px;
+  right: 30px;
+  transform: rotate(90deg);
+}
+
+.bottom-right {
+  bottom: 30px;
+  right: 30px;
+  transform: rotate(180deg);
+}
+
+.bottom-left {
+  bottom: 30px;
+  left: 30px;
+  transform: rotate(270deg);
+}
+
+/* ========================================
+   ARCHED SVG TITLE
+======================================== */
+
+svg.title-svg {
+  display: block;
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* ========================================
+   QUESTION STYLES
+======================================== */
+
+#question {
+  border-radius: 12px;
+}
+
+#question_font {
+  font-size: 150%;
+  font-family: "Bahianita", serif;
+}
+
+/* ========================================
+   ASK ANNA BUTTON
+======================================== */
+
+.ask-anna-button {
+  background-color: #59483f;
+  color: #f1d9b5;
+
+  border: 1px solid #b99a6a;
+  outline: 1px solid #b99a6a;
+  outline-offset: -6px;
+
+  padding: 18px 42px;
+
+  font-family: "Federo", serif;
+  font-size: 18px;
+  letter-spacing: 3px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.ask-anna-button:hover {
+  background-color: #735b4b;
+  color: #fff2d9;
+}
+
+.ask-anna-button:focus-visible {
+  outline: 2px solid #f1d9b5;
+  outline-offset: 3px;
+}
+
+/* ========================================
+   PASSAGE BUTTONS
+======================================== */
+
+.passage-button {
+  background-color: transparent;
+  color: #59483f;
+
+  border: 1px solid #a88459;
+  border-radius: 0;
+
+  padding: 10px 22px;
+
+  font-family: "Federo", serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.passage-button:hover {
+  background-color: #59483f;
+  color: #f1d9b5;
+}
+
+.passage-button:focus-visible {
+  outline: 2px solid #59483f;
+  outline-offset: 3px;
+}
+
+/* ========================================
+   QUOTATION DISPLAY
+======================================== */
+
+#quote-display {
+  width: 100%;
+  max-width: 850px;
+  margin: 24px auto 12px;
+  padding: 12px 28px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  line-height: 1.8;
+  letter-spacing: 0.2px;
+
+  color: #382d29;
+  text-align: center;
+}
+
+/* ========================================
+   DESKTOP PASSAGE LAYOUT
+======================================== */
+
+.passage-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.passage-layout #quote-display {
+  flex: 0 0 100%;
+  order: 0;
+}
+
+#decrementButton {
+  order: 1;
+}
+
+#incrementButton {
+  order: 2;
+}
+
+/* ========================================
+   MOBILE LAYOUT
+======================================== */
+
+@media (max-width: 600px) {
+
+  /* Page spacing */
+
+  body {
+    padding: 0;
   }
+
+  .page-wrapper {
+    padding: 30px 12px 50px;
+  }
+
+  /* SVG title */
+
+  svg.title-svg {
+    width: 85%;
+  }
+
+  /* Corner ornaments */
+
+  .corner-ornament {
+    width: 65px;
+    height: 65px;
+  }
+
+  .corner-ornament.top-left {
+    top: 8px;
+    left: 8px;
+  }
+
+  .corner-ornament.top-right {
+    top: 8px;
+    right: 8px;
+  }
+
+  .corner-ornament.bottom-left {
+    bottom: 8px;
+    left: 8px;
+  }
+
+  .corner-ornament.bottom-right {
+    bottom: 8px;
+    right: 8px;
+  }
+
+  /* Mobile quotation */
+
+  #quote-display {
+    max-width: 100%;
+    margin: 20px auto 12px;
+    padding: 8px 4px;
+    font-size: 17px;
+    line-height: 1.65;
+  }
+
+  /* Mobile passage navigation */
+
+  .passage-layout {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+
+  #decrementButton {
+    order: 0;
+    margin-top: 18px;
+  }
+
+  .passage-layout #quote-display {
+    order: 1;
+    flex: 0 1 auto;
+  }
+
+  #incrementButton {
+    order: 2;
+  }
+
+  .passage-layout .passage-button {
+    align-self: center;
+  }
+}

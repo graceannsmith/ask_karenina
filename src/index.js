@@ -4,81 +4,153 @@ import './css/styles.css';
 
 import { bookText } from './text.js';
 
-/*
-Obtain the text of the book in a format that can be easily processed by JavaScript.
- This could be a plain text file, a JSON file, or any other format that suits your needs. 
- If you're dealing with a physical book, you might need to use OCR (Optical Character Recognition) 
- software to convert the physical text into a digital format.
-*/
+// ─────────────────────────────────────────────────────────────
+// 1. Build a better sentence list (keep periods & quotes)
+// ─────────────────────────────────────────────────────────────
 
+// Split on: “period + whitespace”, keeping the period on the left side
+const rawSentences = bookText
+  .split(/(?<=\.)\s+/)   // e.g. `"Well." She` → ["\"Well.", "She ..."]
+  .map(s => s.trim())
+  .filter(Boolean);
 
+// For each sentence, track whether it starts/ends inside an open quote
+const sentenceData = [];
+let insideQuote = 0; // 0 = outside, 1 = inside
 
-/*
-I want to add a button that when pushed displays the next sentence in the book without
-    deleting the first sentence. I want this button to be able to pushed as many times 
-    as the user wants.
+for (const text of rawSentences) {
+  const startInside = insideQuote === 1;
 
-I want another button the will reavel the previous sentnce if the user so desires 
-    with out deleting the original text and that they can add another sentence each time 
-    they push the buttion.
+  for (const ch of text) {
+    if (ch === '"') {
+      // toggle on every double quote
+      insideQuote ^= 1;
+    }
+  }
 
-I want the original sentence to always be in bold
+  const endInside = insideQuote === 1;
 
-I want to be able to delete the quotation marks right after thesentence or to have
-the quotation marks included in the previous sentence
-
-
-*/
-//const bookSentences = bookText.split('.'); // Split text into sentences (adjust as needed)
-
-
-
-const bookSentences = bookText.split('.').map(sentence => sentence.trim());
-let quoteArray = [];
-
-function getCurrentQuoteIndex(currentIndex) {
-  return currentIndex % bookSentences.length;
+  sentenceData.push({ text, startInside, endInside });
 }
+
+// ─────────────────────────────────────────────────────────────
+// 2. State for the current quote block
+// ─────────────────────────────────────────────────────────────
+
+let quoteArray = [];
+let originalIndex = null;
+let currentStartIndex = null;
+let currentEndIndex = null;
+
+// ─────────────────────────────────────────────────────────────
+// 3. Helper: expand a picked sentence to the full quote
+// ─────────────────────────────────────────────────────────────
+
+function expandToFullQuote(index) {
+  const s = sentenceData[index];
+
+  // Completely outside any surrounding quote and no " inside → just that sentence
+  if (!s.startInside && !s.endInside && !s.text.includes('"')) {
+    return [index, index];
+  }
+
+  let start = index;
+  let end = index;
+
+  // If we’re inside a quote at the start of this sentence,
+  // walk backwards to the sentence where that quote began.
+  if (s.startInside) {
+    while (start > 0 && sentenceData[start].startInside) {
+      start--;
+    }
+
+    // We stopped on the first sentence that *doesn't* start inside a quote.
+    // If that sentence ends inside a quote, it's the one where the quote started.
+    if (!sentenceData[start].endInside) {
+      // That sentence is fully outside; move forward one.
+      start++;
+    }
+  }
+
+  // If we’re still inside the quote at the end of this sentence,
+  // walk forwards to the sentence where the quote closes.
+  if (s.endInside) {
+    while (end < sentenceData.length - 1 && sentenceData[end].endInside) {
+      end++;
+    }
+  }
+
+  // Safety clamps
+  if (start < 0) start = 0;
+  if (end >= sentenceData.length) end = sentenceData.length - 1;
+
+  return [start, end];
+}
+
+function buildQuoteArray(start, end) {
+  const result = [];
+  for (let i = start; i <= end; i++) {
+    const sentence = sentenceData[i].text;
+    if (i === originalIndex) {
+      result.push(`<b>${sentence}</b>`);
+    } else {
+      result.push(sentence);
+    }
+  }
+  return result;
+}
+
+// ─────────────────────────────────────────────────────────────
+// 4. Core quote functions
+// ─────────────────────────────────────────────────────────────
 
 function getRandomQuote() {
-  const currentIndex = Math.floor(Math.random() * bookSentences.length);
-  return quoteArray.push(bookSentences[currentIndex]);
+  originalIndex = Math.floor(Math.random() * sentenceData.length);
+
+  const [start, end] = expandToFullQuote(originalIndex);
+
+  currentStartIndex = start;
+  currentEndIndex = end;
+
+  quoteArray = buildQuoteArray(start, end);
+  updateQuoteDisplay();
 }
 
-function addNextQuote(currentIndex) {
-  const nextIndex = getCurrentQuoteIndex(currentIndex + 1);
-  quoteArray.push(bookSentences[nextIndex]);
-  return quoteArray;
+function addNextQuote() {
+  const nextIndex = currentEndIndex + 1;
+  if (nextIndex < sentenceData.length) {
+    quoteArray.push(sentenceData[nextIndex].text);
+    currentEndIndex = nextIndex;
+    updateQuoteDisplay();
+  }
 }
 
-function addPreviousQuote(currentIndex) {
-  const prevIndex = getCurrentQuoteIndex(currentIndex - 1);
-  quoteArray.unshift(bookSentences[prevIndex]);
-  return quoteArray;
+function addPreviousQuote() {
+  const prevIndex = currentStartIndex - 1;
+  if (prevIndex >= 0) {
+    quoteArray.unshift(sentenceData[prevIndex].text);
+    currentStartIndex = prevIndex;
+    updateQuoteDisplay();
+  }
 }
-
-let currentIndex = 0;
-quoteArray = [getRandomQuote()];
 
 function updateQuoteDisplay() {
-  const quoteDisplay = document.getElementById('quoteDisplay');
-  quoteDisplay.innerText = quoteArray.join('. ');
+  // Sentences already include their period, so just join with a space
+  document.getElementById('quote-display').innerHTML = quoteArray.join(' ');
 }
 
+// ─────────────────────────────────────────────────────────────
+// 5. Wire up the buttons (single DOMContentLoaded handler)
+// ─────────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', () => {
-  updateQuoteDisplay();
-  document.getElementById('submit').addEventListener('click', ()=> {
-    quoteArray = getRandomQuote();
+  const submit = document.querySelector('input[type="submit"]');
+
+  submit.addEventListener('click', (event) => {
+    event.preventDefault();
+    getRandomQuote(); // Generate a new quote
   });
 
-  document.getElementById('nextQuoteButton').addEventListener('click', () => {
-    quoteArray = addNextQuote(currentIndex);
-   
-    updateQuoteDisplay();
-  });
-  document.getElementById('prevQuoteButton').addEventListener('click', () => {
-    quoteArray = addPreviousQuote(currentIndex);
-    
-    updateQuoteDisplay();
-  });
+  document.getElementById('incrementButton').addEventListener('click', addNextQuote);
+  document.getElementById('decrementButton').addEventListener('click', addPreviousQuote);
 });

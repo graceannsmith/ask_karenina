@@ -1,0 +1,39 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Bahianita&family=Baumans&family=Federo&family=Poiret+One&family=Righteous&family=Tulpen+One&display=swap');
+
+@font-face {
+.bahianita-regular {
+    font-family: "Bahianita", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  .righteous-regular {
+    font-family: "Righteous", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  .tulpen-one-regular {
+    font-family: "Tulpen One", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  .baumans-regular {
+    font-family: "Baumans", system-ui;
+    font-weight: 400;
+    font-style: normal;
+  }
+  .poiret-one-regular {
+    font-family: "Poiret One", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  .federo-regular {
+    font-family: "Federo", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+        
+
+}
+    
