@@ -104,6 +104,11 @@ function buildQuoteArray(start, end) {
 // 4. Core quote functions
 // ─────────────────────────────────────────────────────────────
 
+
+// ─────────────────────────────────────────────────────────────
+// 4. Core quote functions
+// ─────────────────────────────────────────────────────────────
+
 function getRandomQuote() {
   originalIndex = Math.floor(Math.random() * sentenceData.length);
 
@@ -114,30 +119,70 @@ function getRandomQuote() {
 
   quoteArray = buildQuoteArray(start, end);
   updateQuoteDisplay();
+
+  // Announce the entire new quotation without HTML tags
+  const fullQuote = sentenceData
+    .slice(start, end + 1)
+    .map(sentence => sentence.text)
+    .join(' ');
+
+  announceQuote(fullQuote);
 }
 
 function addNextQuote() {
+  // Make sure a quotation has already been generated
+  if (currentEndIndex === null) {
+    announceQuote('Select Ask Anna to begin.');
+    return;
+  }
+
   const nextIndex = currentEndIndex + 1;
+
   if (nextIndex < sentenceData.length) {
-    quoteArray.push(sentenceData[nextIndex].text);
+    const nextSentence = sentenceData[nextIndex].text;
+
+    quoteArray.push(nextSentence);
     currentEndIndex = nextIndex;
+
     updateQuoteDisplay();
+    announceQuote(`Later passage added. ${nextSentence}`);
+  } else {
+    announceQuote('You have reached the end of the text.');
   }
 }
 
 function addPreviousQuote() {
+  // Make sure a quotation has already been generated
+  if (currentStartIndex === null) {
+    announceQuote('Select Ask Anna to begin.');
+    return;
+  }
+
   const prevIndex = currentStartIndex - 1;
+
   if (prevIndex >= 0) {
-    quoteArray.unshift(sentenceData[prevIndex].text);
+    const previousSentence = sentenceData[prevIndex].text;
+
+    quoteArray.unshift(previousSentence);
     currentStartIndex = prevIndex;
+
     updateQuoteDisplay();
+    announceQuote(`Earlier passage added. ${previousSentence}`);
+  } else {
+    announceQuote('You have reached the beginning of the text.');
   }
 }
 
 function updateQuoteDisplay() {
-  // Sentences already include their period, so just join with a space
-  document.getElementById('quote-display').innerHTML = quoteArray.join(' ');
+  document.getElementById('quote-display').innerHTML =
+    quoteArray.join(' ');
 }
+
+function announceQuote(message) {
+  document.getElementById('quote-announcement').textContent =
+    message;
+}
+
 
 // ─────────────────────────────────────────────────────────────
 // 5. Wire up the buttons (single DOMContentLoaded handler)

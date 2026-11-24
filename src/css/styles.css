@@ -187,26 +187,54 @@ svg.title-svg {
    DESKTOP PASSAGE LAYOUT
 ======================================== */
 
+
 .passage-layout {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 180px 180px;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  column-gap: 4px;
   width: 100%;
 }
 
 .passage-layout #quote-display {
-  flex: 0 0 100%;
-  order: 0;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  width: 100%;
+  justify-self: center;
+}
+
+/* DESKTOP PASSAGE LAYOUT */
+
+.passage-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  align-items: center;
+  column-gap: 4px;
+  width: 100%;
+}
+
+.passage-layout #quote-display {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  width: 100%;
+  max-width: 850px;
+  justify-self: center;
 }
 
 #decrementButton {
-  order: 1;
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: end;
+  width: 180px;
 }
 
 #incrementButton {
-  order: 2;
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: start;
+  width: 180px;
 }
 
 /* ========================================
@@ -270,27 +298,29 @@ svg.title-svg {
 
   /* Mobile passage navigation */
 
-  .passage-layout {
-    flex-direction: column;
-    flex-wrap: nowrap;
-    gap: 12px;
-  }
+  /* Mobile passage navigation */
 
-  #decrementButton {
-    order: 0;
-    margin-top: 18px;
-  }
+.passage-layout {
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 12px;
+}
 
-  .passage-layout #quote-display {
-    order: 1;
-    flex: 0 1 auto;
-  }
+#decrementButton {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: center;
+  margin-top: 18px;
+}
 
-  #incrementButton {
-    order: 2;
-  }
+.passage-layout #quote-display {
+  grid-column: 1;
+  grid-row: 2;
+  width: 100%;
+}
 
-  .passage-layout .passage-button {
-    align-self: center;
-  }
+#incrementButton {
+  grid-column: 1;
+  grid-row: 3;
+  justify-self: center;
+}
 }
