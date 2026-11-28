@@ -844,3 +844,350 @@ for (const [context, examples] of closingContextExamples) {
     { depth: null }
   );
 }
+
+
+// 26. Correct misplaced closing italic delimiters
+
+function correctItalicBoundaries(text, spans) {
+  const correctedSpans = [];
+
+  for (const span of spans) {
+    const previousSpan =
+      correctedSpans[correctedSpans.length - 1];
+
+    const currentText = getSpanText(text, span);
+
+    if (
+      !previousSpan ||
+      !currentText.trimStart().startsWith('_')
+    ) {
+      correctedSpans.push({ ...span });
+      continue;
+    }
+
+    const underscoreOffset =
+      span.start + currentText.indexOf('_');
+
+    const precedingUnderscores =
+      (text.slice(0, underscoreOffset).match(/_/g) || [])
+        .length;
+
+    const isClosingDelimiter =
+      precedingUnderscores % 2 !== 0;
+
+    if (!isClosingDelimiter) {
+      correctedSpans.push({ ...span });
+      continue;
+    }
+
+    const closingPrefix =
+      currentText.match(/^\s*_[”"’»]*\s*/u);
+
+    const newBoundary =
+      span.start + closingPrefix[0].length;
+
+    // Extend the preceding span
+    correctedSpans[correctedSpans.length - 1] = {
+      start: previousSpan.start,
+      end: newBoundary
+    };
+
+    // Retain any remaining content
+    if (newBoundary < span.end) {
+      correctedSpans.push({
+        start: newBoundary,
+        end: span.end
+      });
+    }
+  }
+
+  return correctedSpans;
+}
+
+
+// 27. Evaluate italic boundary correction
+
+const italicCorrectedParagraphs = spanV3Paragraphs.map(
+  paragraph => ({
+    ...paragraph,
+    spansItalic: correctItalicBoundaries(
+      paragraph.text,
+      paragraph.spansV3
+    )
+  })
+);
+
+const totalSpansItalic =
+  italicCorrectedParagraphs.reduce(
+    (total, paragraph) =>
+      total + paragraph.spansItalic.length,
+    0
+  );
+
+const affectedItalicParagraphs =
+  italicCorrectedParagraphs.filter(
+    paragraph =>
+      JSON.stringify(paragraph.spansV3) !==
+      JSON.stringify(paragraph.spansItalic)
+  );
+
+const italicReconstructionMismatches =
+  italicCorrectedParagraphs.filter(paragraph => {
+    const reconstructed = paragraph.spansItalic
+      .map(span => getSpanText(paragraph.text, span))
+      .join('');
+
+    return reconstructed !== paragraph.text;
+  });
+
+const italicStructuralMismatches =
+  italicCorrectedParagraphs.filter(
+    paragraph =>
+      !validateSpans(
+        paragraph.text,
+        paragraph.spansItalic
+      )
+  );
+
+console.log('\nItalic boundary correction results:');
+
+console.table([
+  {
+    method: 'Span Hybrid V3',
+    segments: totalSpansV3,
+    reconstructionErrors:
+      reconstructionMismatchesV3.length
+  },
+  {
+    method: 'Italic corrected spans',
+    segments: totalSpansItalic,
+    reconstructionErrors:
+      italicReconstructionMismatches.length
+  }
+]);
+
+console.log(
+  'Boundaries eliminated:',
+  totalSpansV3 - totalSpansItalic
+);
+
+console.log(
+  'Paragraphs affected:',
+  affectedItalicParagraphs.length
+);
+
+console.log(
+  'Structural errors:',
+  italicStructuralMismatches.length
+);
+
+
+// 28. Validate individual italic boundary corrections
+
+let preservedOpeningBoundaries = 0;
+let relocatedClosingBoundaries = 0;
+let eliminatedClosingBoundaries = 0;
+
+const unexpectedItalicCorrections = [];
+
+for (const paragraph of italicCorrectedParagraphs) {
+  const originalBoundaries = new Set(
+    paragraph.spansV3.map(span => span.end)
+  );
+
+  const correctedBoundaries = new Set(
+    paragraph.spansItalic.map(span => span.end)
+  );
+
+  const expectedBoundaries = new Set(
+    originalBoundaries
+  );
+
+  const candidates = classifiedUnderscoreBoundaries
+    .filter(candidate =>
+      candidate.part === paragraph.part &&
+      candidate.chapter === paragraph.chapter &&
+      candidate.paragraph === paragraph.paragraph
+    );
+
+  for (const candidate of candidates) {
+    const oldBoundary = candidate.boundaryOffset;
+
+    if (candidate.classification === 'opening') {
+      if (correctedBoundaries.has(oldBoundary)) {
+        preservedOpeningBoundaries++;
+      } else {
+        unexpectedItalicCorrections.push({
+          ...candidate,
+          reason: 'Opening boundary removed'
+        });
+      }
+
+      continue;
+    }
+
+    const originalSpan = paragraph.spansV3.find(
+      span => span.start === oldBoundary
+    );
+
+    const currentText = getSpanText(
+      paragraph.text,
+      originalSpan
+    );
+
+    const prefix = currentText.match(
+      /^\s*_[”"’»]*\s*/u
+    );
+
+    const expectedBoundary =
+      oldBoundary + prefix[0].length;
+
+    expectedBoundaries.delete(oldBoundary);
+    expectedBoundaries.add(expectedBoundary);
+
+    if (
+      correctedBoundaries.has(oldBoundary) ||
+      !correctedBoundaries.has(expectedBoundary)
+    ) {
+      unexpectedItalicCorrections.push({
+        ...candidate,
+        expectedBoundary,
+        reason: 'Incorrect closing boundary correction'
+      });
+
+      continue;
+    }
+
+    if (expectedBoundary === originalSpan.end) {
+      eliminatedClosingBoundaries++;
+    } else {
+      relocatedClosingBoundaries++;
+    }
+  }
+
+  const missingBoundaries =
+    [...expectedBoundaries].filter(
+      boundary => !correctedBoundaries.has(boundary)
+    );
+
+  const unexpectedBoundaries =
+    [...correctedBoundaries].filter(
+      boundary => !expectedBoundaries.has(boundary)
+    );
+
+  if (
+    missingBoundaries.length > 0 ||
+    unexpectedBoundaries.length > 0
+  ) {
+    unexpectedItalicCorrections.push({
+      part: paragraph.part,
+      chapter: paragraph.chapter,
+      paragraph: paragraph.paragraph,
+      missingBoundaries,
+      unexpectedBoundaries,
+      reason: 'Unexpected boundary differences'
+    });
+  }
+}
+
+console.log('\nItalic boundary regression validation:');
+
+console.table([
+  {
+    measurement: 'Opening boundaries preserved',
+    expected: 41,
+    actual: preservedOpeningBoundaries
+  },
+  {
+    measurement: 'Closing boundaries relocated',
+    expected: 50,
+    actual: relocatedClosingBoundaries
+  },
+  {
+    measurement: 'Closing boundaries eliminated',
+    expected: 12,
+    actual: eliminatedClosingBoundaries
+  },
+  {
+    measurement: 'Unexpected corrections',
+    expected: 0,
+    actual: unexpectedItalicCorrections.length
+  }
+]);
+
+console.dir(unexpectedItalicCorrections, {
+  depth: null
+});
+
+
+// 29. Inspect representative italic corrections
+
+const italicRegressionExamples = [
+  {
+    part: 1, chapter: 9, paragraph: 21,
+    description: 'Opening and closing delimiters'
+  },
+  {
+    part: 1, chapter: 17, paragraph: 13,
+    description: 'Uppercase continuation'
+  },
+  {
+    part: 1, chapter: 17, paragraph: 22,
+    description: 'Reporting clause'
+  },
+  {
+    part: 2, chapter: 7, paragraph: 75,
+    description: 'Orphaned closing delimiters'
+  },
+  {
+    part: 3, chapter: 14, paragraph: 6,
+    description: 'Postscript and em dash'
+  },
+  {
+    part: 7, chapter: 29, paragraph: 4,
+    description: 'Consecutive italicized expressions'
+  }
+];
+
+console.log('\nItalic regression examples:');
+
+for (const example of italicRegressionExamples) {
+  const paragraph = italicCorrectedParagraphs.find(
+    paragraph =>
+      paragraph.part === example.part &&
+      paragraph.chapter === example.chapter &&
+      paragraph.paragraph === example.paragraph
+  );
+
+  if (!paragraph) {
+    throw new Error(
+      `Regression example not found: ${example.description}`
+    );
+  }
+
+  console.log(`\n${example.description}`);
+
+  console.log(
+    `Part ${example.part}, ` +
+    `Chapter ${example.chapter}, ` +
+    `Paragraph ${example.paragraph}`
+  );
+
+  console.log('\nBefore:');
+
+  console.log(
+    paragraph.spansV3
+      .map(span => getSpanText(paragraph.text, span))
+      .join(' | ')
+  );
+
+  console.log('\nAfter:');
+
+  console.log(
+    paragraph.spansItalic
+      .map(span => getSpanText(paragraph.text, span))
+      .join(' | ')
+  );
+}
+
+
